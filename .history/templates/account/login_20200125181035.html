@@ -1,0 +1,116 @@
+{% extends "account/base.html" %} {% load i18n %} {% load account socialaccount
+%} {% block head_title %}{% trans "Sign In" %}{% endblock %} {% block content %}
+
+<main>
+  <div class="container">
+    <!--Navbar-->
+    <nav
+      class="navbar navbar-expand-lg navbar-dark mdb-color lighten-3 mt-3 mb-5"
+    >
+      <!-- Navbar brand -->
+      <span class="navbar-brand">Categories:</span>
+
+      <!-- Collapse button -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#basicExampleNav"
+        aria-controls="basicExampleNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Collapsible content -->
+      <div class="collapse navbar-collapse" id="basicExampleNav">
+        <!-- Links -->
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#"
+              >All
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Shirts</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Sport wears</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Outwears</a>
+          </li>
+        </ul>
+        <!-- Links -->
+
+        <form class="form-inline">
+          <div class="md-form my-0">
+            <input
+              class="form-control mr-sm-2"
+              type="text"
+              placeholder="Search"
+              aria-label="Search"
+            />
+          </div>
+        </form>
+      </div>
+      <!-- Collapsible content -->
+    </nav>
+    <!--/.Navbar-->
+
+    <!--Section: Products v.3-->
+    <section class="text-center mb-4">
+      <!--Grid row-->
+      <div class="row wow fadeIn">
+        <h1>{% trans "Sign In" %}</h1>
+
+        {% get_providers as socialaccount_providers %} {% if
+        socialaccount_providers %}
+        <p>
+          {% blocktrans with site.name as site_name %}Please sign in with one of
+          your existing third party accounts. Or,
+          <a href="{{ signup_url }}">sign up</a> for a {{ site_name }} account
+          and sign in below:{% endblocktrans %}
+        </p>
+
+        <div class="socialaccount_ballot">
+          <ul class="socialaccount_providers">
+            {% include "socialaccount/snippets/provider_list.html" with
+            process="login" %}
+          </ul>
+
+          <div class="login-or">{% trans 'or' %}</div>
+        </div>
+
+        {% include "socialaccount/snippets/login_extra.html" %} {% else %}
+        <p>
+          {% blocktrans %}If you have not created an account yet, then please
+          <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}
+        </p>
+        {% endif %}
+
+        <form class="login" method="POST" action="{% url 'account_login' %}">
+          {% csrf_token %} {{ form.as_p }} {% if redirect_field_value %}
+          <input
+            type="hidden"
+            name="{{ redirect_field_name }}"
+            value="{{ redirect_field_value }}"
+          />
+          {% endif %}
+          <a
+            class="button secondaryAction"
+            href="{% url 'account_reset_password' %}"
+            >{% trans "Forgot Password?" %}</a
+          >
+          <button class="primaryAction" type="submit">
+            {% trans "Sign In" %}
+          </button>
+        </form>
+
+        {% endblock %}
+      </div>
+    </section>
+  </div>
+</main>

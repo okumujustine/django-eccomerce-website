@@ -1,0 +1,42 @@
+{% extends 'base.html' %} {% block content %}
+<!--Main layout-->
+<main>
+  <div class="container">
+    <div class="table-responsive text-nowrap">
+      <h2>Order Summary</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Item Title</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Total Item Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order_item in object.items.all %}
+          <tr>
+            <th scope="row">1</th>
+            <td>{{order_item.item.title}}</td>
+            <td>{{order_item.item.price}}</td>
+            <td>{{order_item.quantity}}</td>
+            <td>
+              {% if order_item.item.discount_price %} {{
+              order_item.get_total_item_discount_price }} {% else %} {{
+              order_item.get_total_item_price }} {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<!--Main layout-->
+
+<!--Footer-->
+<footer class="page-footer text-center font-small mt-4 wow fadeIn">
+  <hr class="my-4" />
+  {% endblock content %}
+</footer>

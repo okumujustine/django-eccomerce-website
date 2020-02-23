@@ -1,0 +1,18 @@
+<div {% include "django/forms/widgets/attrs.html" %}>
+  <select name="{{ widget.name }}">
+    {% for group_name, group_choices, group_index in widget.optgroups %}
+      {% if group_name %}
+        <optgroup label="{{ group_name }}">
+      {% endif %}
+      {% for option in group_choices %}
+        {% with widget=option %}
+          <option value="{{ widget.value }}" {% include "django/forms/widgets/attrs.html" %}>{{ widget.label }}</option>
+        {% endwith %}
+      {% endfor %}
+      {% if group_name %}
+        </optgroup>
+      {% endif %}
+    {% endfor %}
+  </select>
+  <input type="text" placeholder="Search Font Awesome" class="d-fa-input"></input>
+</div>
