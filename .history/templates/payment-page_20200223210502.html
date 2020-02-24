@@ -191,12 +191,11 @@
       <hr class="my-4" />
       {% endblock content %}
     </footer>
-    {% block extra_js  %}
+
     <script src="https://js.stripe.com/v3/"></script>
     <script type="text/javascript" nonce="">
       // Create a Stripe client.
-      var stripe = Stripe("pk_test_oJemwir87HLvq5UgGfvmf7db00ag4UXlMj");
-    //   var stripe = Stripe('{{STRIPE_PUBLIC_KEY}}');
+      var stripe = Stripe("pk_test_TYooMQauvdEDq54NiTphI7jx");
 
       // Create an instance of Elements.
       var elements = stripe.elements();
@@ -265,6 +264,5 @@
       }
 
     </script>
-    {% endblock extra_js %}
   </body>
 </html>

@@ -61,12 +61,12 @@ class PaymentView(View):
         token = self.request.POST.get('stripeToken')
         amount = int(order.get_total() * 100)
         print(token)
-        print(amount)
         try:
             charge = stripe.Charge.create(
                 amount=amount,
                 currency='usd',
                 source = token
+                # description='Charge for jean',
             )
 
             payment = Payment()
@@ -75,14 +75,8 @@ class PaymentView(View):
             payment.amount = order.get_total()
             payment.save()
 
-            order_items = order.items.all()
-            order_items.update(ordered=True)
-            for item in order_items:
-                item.save()
-
             order.ordered = True
-            # order.items.ordered = True
-            order.payment = payment
+            order.ordered = payment
             order.save()
             messages.success(self.request, "Your order was successful")
             return redirect("/")
@@ -94,7 +88,7 @@ class PaymentView(View):
             messages.error(self.request, "Rate limit error")
             return redirect("/")
         except stripe.error.InvalidRequestError as e:
-            messages.error(self.request, "Invalid parameters"+e.error.message)
+            messages.error(self.request, "Invalid parameters")
             return redirect("/")
         except stripe.error.AuthenticationError as e:
             messages.error(self.request, "Not authentication")
@@ -103,11 +97,10 @@ class PaymentView(View):
             messages.error(self.request, "Network error")
             return redirect("/")
         except stripe.error.StripeError as e:
-            messages.error(self.request, "Something went wrong. You were not charged. Please try again"+e.error.message)
+            messages.error(self.request, "Something went wrong. You were not charged. Please try again")
             return redirect("/")
         except Exception as e:
-            messages.error(self.request, "A serious error occured, we have been notified")
-            print(e)
+            messages.error(self.request, "A serious error occured, you have been notified")
             return redirect("/")
 
 

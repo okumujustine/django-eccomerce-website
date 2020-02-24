@@ -104,6 +104,4 @@ LOGIN_REDIRECT_URL = '/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
-# STRIPE_SECRET_KEY = 'sk_test_vVOBObiKVeOtCIqCnNhOSckh001ouuPIsV'
-	
-STRIPE_SECRET_KEY = 'sk_test_vVOBObiKVeOtCIqCnNhOSckh001ouuPIsV'
+STRIPE_SECRET_KEY = 'pk_test_oJemwir87HLvq5UgGfvmf7db00ag4UXlMj'

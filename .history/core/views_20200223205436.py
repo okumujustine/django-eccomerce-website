@@ -60,13 +60,13 @@ class PaymentView(View):
         order = Order.objects.get(user=self.request.user, ordered=False)
         token = self.request.POST.get('stripeToken')
         amount = int(order.get_total() * 100)
-        print(token)
-        print(amount)
+
         try:
             charge = stripe.Charge.create(
                 amount=amount,
                 currency='usd',
                 source = token
+                # description='Charge for jean',
             )
 
             payment = Payment()
@@ -75,40 +75,33 @@ class PaymentView(View):
             payment.amount = order.get_total()
             payment.save()
 
-            order_items = order.items.all()
-            order_items.update(ordered=True)
-            for item in order_items:
-                item.save()
-
             order.ordered = True
-            # order.items.ordered = True
-            order.payment = payment
+            order.ordered = payment
             order.save()
             messages.success(self.request, "Your order was successful")
-            return redirect("/")
+            return redirect("core:order-summary")
 
         except stripe.error.CardError as e:
             messages.error(self.request, e.error.message)
-            return redirect("/")
+            return redirect("core:order-summary")
         except stripe.error.RateLimitError as e:
             messages.error(self.request, "Rate limit error")
-            return redirect("/")
+            return redirect("core:order-summary")
         except stripe.error.InvalidRequestError as e:
-            messages.error(self.request, "Invalid parameters"+e.error.message)
-            return redirect("/")
+            messages.error(self.request, "Invalid parameters")
+            return redirect("core:order-summary")
         except stripe.error.AuthenticationError as e:
             messages.error(self.request, "Not authentication")
-            return redirect("/")
+            return redirect("core:order-summary")
         except stripe.error.APIConnectionError as e:
             messages.error(self.request, "Network error")
-            return redirect("/")
+            return redirect("core:order-summary")
         except stripe.error.StripeError as e:
-            messages.error(self.request, "Something went wrong. You were not charged. Please try again"+e.error.message)
-            return redirect("/")
+            messages.error(self.request, "Something went wrong. You were not charged. Please try again")
+            return redirect("core:order-summary")
         except Exception as e:
-            messages.error(self.request, "A serious error occured, we have been notified")
-            print(e)
-            return redirect("/")
+            messages.error(self.request, "A serious error occured, you have been notified")
+            return redirect("core:order-summary")
 
 
 def products(request):

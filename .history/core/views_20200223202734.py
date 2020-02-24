@@ -59,57 +59,47 @@ class PaymentView(View):
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
         token = self.request.POST.get('stripeToken')
-        amount = int(order.get_total() * 100)
-        print(token)
-        print(amount)
+        amount = order.get_total() * 100
+
         try:
             charge = stripe.Charge.create(
                 amount=amount,
                 currency='usd',
                 source = token
+                # description='Charge for jean',
             )
-
-            payment = Payment()
-            payment.stripe_charge_id = charge['id']
-            payment.user = self.request.user
-            payment.amount = order.get_total()
-            payment.save()
-
-            order_items = order.items.all()
-            order_items.update(ordered=True)
-            for item in order_items:
-                item.save()
-
-            order.ordered = True
-            # order.items.ordered = True
-            order.payment = payment
-            order.save()
-            messages.success(self.request, "Your order was successful")
-            return redirect("/")
-
         except stripe.error.CardError as e:
             messages.error(self.request, e.error.message)
-            return redirect("/")
         except stripe.error.RateLimitError as e:
-            messages.error(self.request, "Rate limit error")
-            return redirect("/")
+            # Too many requests made to the API too quickly
+            pass
         except stripe.error.InvalidRequestError as e:
-            messages.error(self.request, "Invalid parameters"+e.error.message)
-            return redirect("/")
+            # Invalid parameters were supplied to Stripe's API
+            pass
         except stripe.error.AuthenticationError as e:
-            messages.error(self.request, "Not authentication")
-            return redirect("/")
+            # Authentication with Stripe's API failed
+            # (maybe you changed API keys recently)
+            pass
         except stripe.error.APIConnectionError as e:
-            messages.error(self.request, "Network error")
-            return redirect("/")
+            # Network communication with Stripe failed
+            pass
         except stripe.error.StripeError as e:
-            messages.error(self.request, "Something went wrong. You were not charged. Please try again"+e.error.message)
-            return redirect("/")
+            # Display a very generic error to the user, and maybe send
+            # yourself an email
+            pass
         except Exception as e:
-            messages.error(self.request, "A serious error occured, we have been notified")
-            print(e)
-            return redirect("/")
+            # Something else happened, completely unrelated to Stripe
+            pass
 
+        payment = Payment()
+        payment.stripe_charge_id = charge['id']
+        payment.user = self.request.user
+        payment.amount = amount
+        payment.save()
+
+        order.ordered = True
+        order.ordered = payment
+        order.save()
 
 def products(request):
     context = {
