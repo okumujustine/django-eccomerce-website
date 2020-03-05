@@ -46,9 +46,9 @@ class CheckoutView(View):
                 order.billing_address = billing_address
                 order.save( )
                 if payment_option == 'S':
-                    return redirect('core:payment', payment_option='stripe')
+                    return redirect('core:checkout', payment_option='stripe')
                 elif payment_option == 'P':
-                    return redirect('core:payment', payment_option='paypal')
+                    return redirect('core:checkout', payment_option='paypal')
                 else:
                     messages.warning(self.request, "Invalid Payment Option selected")
                     return redirect('core:checkout')
@@ -60,11 +60,7 @@ class CheckoutView(View):
 
 class PaymentView(View):
     def get(self, *args, **kwargs):
-        order = Order.objects.get(user=self.request.user, ordered=False)
-        context = {
-            'order':order
-        }
-        return render(self.request, "payment-page.html", context)
+        return render(self.request, "payment-page.html")
 
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
